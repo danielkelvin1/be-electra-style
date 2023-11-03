@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('image_url')->nullable();
             $table->enum('roles', ['user', 'seller'])->default('user');
+            $table->enum('gender', ['male', 'female']);
             $table->rememberToken();
             $table->timestamps();
         });

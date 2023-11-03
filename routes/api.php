@@ -20,8 +20,10 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-
-Route::prefix('user')->group(function () {
+route::group(['middleware' => 'auth:api', 'controller' => UserController::class], function () {
+    Route::get('/user', 'getUser');
+    Route::post('/user/picture', 'uploadPicutre');
+    Route::put('/user', 'updateProfile');
 });
 
 Route::controller(AuthController::class)->group(function () {

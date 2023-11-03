@@ -12,8 +12,6 @@ class AuthController extends Controller
 {
     public function __construct(protected UserService $service)
     {
-        // $this->middleware('auth:api', ['except' => ['login']]);
-
     }
 
     public function login(AuthLoginUserRequest $req)
@@ -24,7 +22,7 @@ class AuthController extends Controller
 
     function register(AuthRegisterUserRequest $req)
     {
-        $data = $req->only(['username', 'password', 'email', 'name', 'image_url', 'roles']);
+        $data = $req->only(['username', 'password', 'email', 'name', 'image_url', 'roles', 'gender']);
 
         return $this->service->create($data);
     }

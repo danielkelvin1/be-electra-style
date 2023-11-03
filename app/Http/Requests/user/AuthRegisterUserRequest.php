@@ -25,6 +25,7 @@ class AuthRegisterUserRequest extends FormRequest
             'email' => 'required|unique:users,email|max:255|regex:/^[\w\.-]+@[\w\.-]+\.\w+$/',
             'username' => 'required|min:8',
             'name' => 'required|min:8',
+            'gender' => 'required',
             'password' => 'required|min:8|regex:/^(?=.*[A-Z])(?=.*\d).+/',
         ];
     }

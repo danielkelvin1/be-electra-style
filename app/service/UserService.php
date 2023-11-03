@@ -39,25 +39,82 @@ class UserService
 
     public function login($cradentials)
     {
-        if (!$token = auth()->attempt($cradentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        try {
+            if (!$token = auth()->attempt($cradentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
 
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expire_in' => auth()->factory()->getTTL() * 60,
-            'data' => auth()->user(),
-        ], 200);
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expire_in' => auth()->factory()->getTTL() * 60,
+                'data' => auth()->user(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null,
+            ], 500);
+        }
     }
 
+    public function getUser()
+    {
+        try {
+            return response()->json([
+                'data' => auth()->user(),
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null,
+            ], 500);
+        }
+    }
+
+    public function uploadPicture($photo)
+    {
+        try {
+            $path = time() . '.' . $photo->file('picture')->getClientOriginalExtension();
+            $photo->file('picture')->storeAs('public/images', $path);
+            return response()->json([
+                'message' => 'Upload Image Success',
+                "path" => $path,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
+    public function updateProfile($data)
+    {
+        try {
+            $id = auth()->user()->id;
+            $user = User::find($id);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null,
+            ], 500);
+        }
+    }
 
 
     public function logout()
     {
-        auth()->logout();
-        return response()->json([
-            'message' => 'Successfully logout'
-        ]);
+        try {
+            auth()->logout();
+            return response()->json([
+                'message' => 'Successfully logout'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null,
+            ], 500);
+        }
     }
 }
