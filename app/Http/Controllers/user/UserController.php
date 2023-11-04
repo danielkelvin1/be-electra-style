@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\user\UserUpdateRequest;
 use App\Http\Requests\user\UserUploadImageRequest;
 use App\Service\UserService;
 use Illuminate\Http\Request;
@@ -24,8 +25,9 @@ class UserController extends Controller
         return $this->service->uploadPicture($req);
     }
 
-    function updateProfile(Request $req)
+    function updateProfile(UserUpdateRequest $req)
     {
-        return $this->service->updateProfile($req);
+        $data = $req->only(['username', 'name', 'password', 'gender']);
+        return $this->service->updateProfile($data);
     }
 }

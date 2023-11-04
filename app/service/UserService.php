@@ -94,6 +94,15 @@ class UserService
         try {
             $id = auth()->user()->id;
             $user = User::find($id);
+            $user->username = $data["username"];
+            $user->name = $data["name"];
+            $user->password = $data["password"];
+            $user->gender = $data["gender"];
+            $user->save();
+            return response()->json([
+                "message" => "Data success update",
+                "data" => $user
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
