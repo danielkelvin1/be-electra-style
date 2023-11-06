@@ -6,6 +6,8 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class UserService
 {
@@ -75,8 +77,15 @@ class UserService
     public function uploadPicture($photo)
     {
         try {
-            $path = time() . '.' . $photo->file('picture')->getClientOriginalExtension();
-            $photo->file('picture')->storeAs('public/images', $path);
+            $user = auth()->user();
+            if ($user->image_url != null) {
+                Storage::delete($user->image_url);
+            }
+            $file_name = time() . '.' . $photo->file('picture')->getClientOriginalExtension();
+            $path =  $photo->file('picture')->storeAs('public/images', $file_name);
+            // $path = $photo->file('picture')->move('./storage/photocustomer', $file_name);
+            $user->image_url = $path;
+            $user->save();
             return response()->json([
                 'message' => 'Upload Image Success',
                 "path" => $path,
@@ -92,8 +101,7 @@ class UserService
     public function updateProfile($data)
     {
         try {
-            $id = auth()->user()->id;
-            $user = User::find($id);
+            $user = auth()->user();
             $user->username = $data["username"];
             $user->name = $data["name"];
             $user->password = $data["password"];
