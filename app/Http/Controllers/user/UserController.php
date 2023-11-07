@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\user\AddAddressRequest;
 use App\Http\Requests\user\UserUpdateRequest;
 use App\Http\Requests\user\UserUploadImageRequest;
 use App\Service\UserService;
@@ -29,5 +30,11 @@ class UserController extends Controller
     {
         $data = $req->only(['username', 'name', 'password', 'gender']);
         return $this->service->updateProfile($data);
+    }
+
+    function addAddress(AddAddressRequest $req)
+    {
+        $data = $req->only(['province_id', 'city_id', 'complete_address']);
+        return $this->service->addAddress($data);
     }
 }

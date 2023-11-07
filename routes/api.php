@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 route::group(['middleware' => 'auth:api', 'controller' => UserController::class], function () {
     Route::get('/user', 'getUser');
     Route::post('/user/picture', 'uploadPicutre');
+    Route::post('/user/address', 'addAddress');
     Route::put('/user', 'updateProfile');
 });
 
