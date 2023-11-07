@@ -21,10 +21,14 @@ use Illuminate\Support\Facades\Route;
 // });
 
 route::group(['middleware' => 'auth:api', 'controller' => UserController::class], function () {
-    Route::get('/user', 'getUser');
-    Route::post('/user/picture', 'uploadPicutre');
-    Route::post('/user/address', 'addAddress');
-    Route::put('/user', 'updateProfile');
+    Route::prefix('user')->group(function () {
+        Route::get('/', 'getUser');
+        Route::post('/picture', 'uploadPicutre');
+        Route::post('/address', 'addAddress');
+        Route::put('/address/{id}', 'updateAddress');
+        Route::delete('/address/{id}', 'deleteAddress');
+        Route::put('/', 'updateProfile');
+    });
 });
 
 Route::controller(AuthController::class)->group(function () {

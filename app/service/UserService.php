@@ -67,7 +67,28 @@ class UserService
             $user = User::with(['address'])->find(auth()->user()->id);
             return response()->json([
                 'data' => $user,
-            ]);
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null,
+            ], 500);
+        }
+    }
+
+    public function updateProfile($data)
+    {
+        try {
+            $user = auth()->user();
+            $user->username = $data["username"];
+            $user->name = $data["name"];
+            $user->password = $data["password"];
+            $user->gender = $data["gender"];
+            $user->save();
+            return response()->json([
+                "message" => "Data success update",
+                "data" => $user
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -86,14 +107,13 @@ class UserService
             }
             $file_name = time() . '.' . $photo->file('picture')->getClientOriginalExtension();
             $path =  $photo->file('picture')->storeAs('public/images', $file_name);
-            // $path = $photo->file('picture')->move('./storage/photocustomer', $file_name);
             $user->image_url = $path;
             $user->save();
             DB::commit();
             return response()->json([
                 'message' => 'Upload Image Success',
                 "path" => $path,
-            ]);
+            ], 201);
         } catch (Exception $e) {
             DB::rollBack();
             if (isset($user->image_url)) {
@@ -124,13 +144,63 @@ class UserService
             return response()->json([
                 'message' => 'Address created',
                 'data' => $address
-            ]);
+            ], 201);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
                 'message' => $e->getMessage(),
                 'data' => null,
-            ]);
+            ], 500);
+        }
+    }
+
+    public function updateAddress($data, $addressId)
+    {
+        try {
+            DB::beginTransaction();
+            $userId = auth()->user()->id;
+            $provinceId = $data['province_id'];
+            $cityId = $data['city_id'];
+            $completeAddress = $data['complete_address'];
+            Adress::where('id', $addressId)
+                ->where('user_id', $userId)
+                ->update([
+                    'province_id' => $provinceId,
+                    'city_id' => $cityId,
+                    'complete_address' => $completeAddress,
+                ]);
+            DB::commit();
+            return response()->json([
+                'message' => "Address update success",
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
+    public function deleteAddress($addressId)
+    {
+        try {
+            DB::beginTransaction();
+            $userId = auth()->user()->id;
+            $address = Adress::where('id', $addressId)
+                ->where('user_id', $userId)->firstOrFail();
+            $address->delete();
+            DB::commit();
+            return response()->json([
+                'message' => 'delete success'
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
         }
     }
 
