@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Models\Adress;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -196,6 +197,12 @@ class UserService
             ], 200);
         } catch (Exception $e) {
             DB::rollBack();
+            if ($e instanceof ModelNotFoundException) {
+                return response()->json([
+                    "message" => "Data not found",
+                    "data" => null
+                ], 404);
+            }
 
             return response()->json([
                 'message' => $e->getMessage(),
