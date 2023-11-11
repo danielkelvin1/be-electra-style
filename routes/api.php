@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\product\ProductController;
 use App\Http\Controllers\user\AuthController;
 use App\Http\Controllers\user\UserController;
 use Illuminate\Http\Request;
@@ -28,6 +29,12 @@ route::group(['middleware' => 'auth:api', 'controller' => UserController::class]
         Route::put('/address/{id}', 'updateAddress');
         Route::delete('/address/{id}', 'deleteAddress');
         Route::put('/', 'updateProfile');
+    });
+});
+
+Route::group(['middleware' => 'auth:api', 'controller' => ProductController::class], function () {
+    Route::prefix('product')->group(function () {
+        Route::post('/', 'addProduct');
     });
 });
 

@@ -8,8 +8,8 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserService
 {
@@ -106,7 +106,7 @@ class UserService
             if (isset($user->image_url)) {
                 Storage::delete($user->image_url);
             }
-            $file_name = time() . '.' . $photo->file('picture')->getClientOriginalExtension();
+            $file_name = time() . Str::uuid() . '.' . $photo->file('picture')->getClientOriginalExtension();
             $path =  $photo->file('picture')->storeAs('public/images', $file_name);
             $user->image_url = $path;
             $user->save();
