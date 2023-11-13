@@ -35,6 +35,7 @@ route::group(['middleware' => 'auth:api', 'controller' => UserController::class]
 Route::group(['middleware' => 'auth:api', 'controller' => ProductController::class], function () {
     Route::prefix('product')->group(function () {
         Route::post('/', 'addProduct');
+        Route::delete('/image/{id}', 'deleteImageProduct');
     });
 });
 

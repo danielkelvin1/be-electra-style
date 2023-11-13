@@ -18,4 +18,9 @@ class ProductController extends Controller
         $data = $req->only(['title', 'subtitle', 'description', 'price', 'image']);
         return $this->service->create($data);
     }
+
+    public function deleteImageProduct($id)
+    {
+        return $this->service->deleteImage($id);
+    }
 }
