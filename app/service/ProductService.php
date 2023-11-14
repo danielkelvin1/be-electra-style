@@ -61,6 +61,91 @@ class ProductService
         }
     }
 
+    public function update($data, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $userId = auth()->user()->id;
+            $product = Product::where('id', $id)
+                ->where('user_id', $userId)->firstOrFail();
+            $product->title = $data['title'];
+            $product->subtitle = $data['subtitle'];
+            $product->description = $data['description'];
+            $product->price = $data['price'];
+            $product->save();
+            DB::commit();
+            return response()->json([
+                'message' => 'Product updated'
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            if ($e instanceof ModelNotFoundException) {
+                return response()->json([
+                    "message" => "Data not found",
+                    "data" => null
+                ], 404);
+            }
+
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
+    public function addImage($data)
+    {
+        try {
+            DB::beginTransaction();
+            $filename = time() . Str::uuid() . '.' . $data['image']->getClientOriginalExtension();
+            $path = Storage::putFileAs('public/products', $data['image'], $filename);
+            ProductImage::create([
+                'image_url' => $path,
+                'product_id' => $data['idProduct']
+            ]);
+            DB::commit();
+            return response()->json([
+                'message' => 'Image success create'
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollBack();
+            if ($path) {
+                Storage::delete($path);
+            }
+
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            DB::beginTransaction();
+            $userId = auth()->user()->id;
+            $product = Product::where('id', $id)
+                ->where('user_id', $userId)->with('images')->firstOrFail();
+            foreach ($product->images as $image) {
+                Storage::delete($image->image_url);
+            }
+            $product->delete();
+            DB::commit();
+            return response()->json([
+                'message' => 'Delete success'
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
     public function deleteImage($id)
     {
         try {
