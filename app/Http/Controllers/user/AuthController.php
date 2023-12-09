@@ -24,7 +24,7 @@ class AuthController extends Controller
     {
         $data = $req->only(['username', 'password', 'email', 'name', 'image_url', 'roles', 'gender']);
 
-        return $this->service->create($data);
+        return $this->service->register($data);
     }
 
     function logout(Request $req)

@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -15,13 +16,20 @@ class UserService
 {
 
 
-    public function create($user)
+    public function register($user)
     {
         try {
             DB::beginTransaction();
+            $cradentials = ["email" => $user['email'], "password" => $user['password']];
             $user =  User::create($user);
             DB::commit();
+            if (!$token = auth()->attempt($cradentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
             return response()->json([
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expire_in' => auth()->factory()->getTTL() * 60,
                 'message' => 'User created',
                 'data' => $user,
             ], 201);

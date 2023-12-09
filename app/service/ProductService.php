@@ -94,6 +94,26 @@ class ProductService
         }
     }
 
+    public function getAll()
+    {
+        try {
+            DB::beginTransaction();
+            $product = Product::paginate(5);
+            DB::commit();
+            return response()->json([
+                'products' => $product
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
     public function addImage($data)
     {
         try {

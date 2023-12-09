@@ -65,6 +65,7 @@ class ProductController extends Controller
 
     public function getAllProduct()
     {
+        return $this->service->getAll();
     }
 
     public function deleteProduct($id)

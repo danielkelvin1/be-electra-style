@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth:api', 'controller' => ProductController::cla
         Route::delete('/image/{id}', 'deleteImageProduct');
         Route::post('/image', 'addImageProduct');
         Route::delete('/{id}', 'deleteProduct');
+        Route::get('/', 'getAllProduct');
     });
 });
 
