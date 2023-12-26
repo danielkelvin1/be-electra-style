@@ -98,11 +98,12 @@ class ProductService
     {
         try {
             DB::beginTransaction();
-            $product = Product::paginate(5);
+            $product = Product::with(['images'])->paginate(10);
             DB::commit();
-            return response()->json([
-                'products' => $product
-            ], 200);
+            return response()->json(
+                $product,
+                200
+            );
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -111,6 +112,22 @@ class ProductService
                 'message' => $e->getMessage(),
                 'data' => null
             ], 500);
+        }
+    }
+
+    public function getById($id)
+    {
+        try {
+            DB::beginTransaction();
+            $product = Product::with(['images', 'ratings'])->find($id);
+            DB::commit();
+            return response()->json($product, 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $e->getMessage(),
+                'data' => null
+            ]);
         }
     }
 

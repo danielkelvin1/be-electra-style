@@ -32,16 +32,21 @@ route::group(['middleware' => 'auth:api', 'controller' => UserController::class]
     });
 });
 
-Route::group(['middleware' => 'auth:api', 'controller' => ProductController::class], function () {
-    Route::prefix('product')->group(function () {
+
+Route::group(['prefix' => 'product', 'controller' => ProductController::class], function () {
+    Route::get('/', 'getAllProduct');
+    Route::get('/{id}',  'get');
+
+    Route::middleware(['auth:api'], function () {
+
         Route::post('/', 'addProduct');
         Route::put('/{id}', 'editProduct');
         Route::delete('/image/{id}', 'deleteImageProduct');
         Route::post('/image', 'addImageProduct');
         Route::delete('/{id}', 'deleteProduct');
-        Route::get('/', 'getAllProduct');
     });
 });
+
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/login',  'login');

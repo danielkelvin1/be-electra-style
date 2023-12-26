@@ -78,4 +78,9 @@ class ProductController extends Controller
             ], 401);
         }
     }
+
+    public function get($id)
+    {
+        return $this->service->getById($id);
+    }
 }
